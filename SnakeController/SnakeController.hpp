@@ -3,6 +3,7 @@
 #include <list>
 #include <memory>
 
+#include "EventT.hpp"
 #include "IEventHandler.hpp"
 #include "SnakeInterface.hpp"
 
@@ -51,6 +52,7 @@ private:
 
     bool checkForCollisions(Segment newHead);
     void moveSnake(Segment newHead);
+    void placeFood(EventT<FoodResp> const& requestedFood);
 };
 
 } // namespace Snake
