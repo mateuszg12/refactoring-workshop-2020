@@ -49,6 +49,7 @@ private:
     Direction m_currentDirection;
     std::list<Segment> m_segments;
 
+    bool checkForCollisions(Segment newHead);
     void moveSnake(Segment newHead);
 };
 
