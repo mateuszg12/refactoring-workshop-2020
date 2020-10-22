@@ -48,6 +48,8 @@ private:
 
     Direction m_currentDirection;
     std::list<Segment> m_segments;
+
+    void moveSnake(Segment newHead);
 };
 
 } // namespace Snake

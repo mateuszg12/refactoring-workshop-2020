@@ -63,6 +63,24 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
     }
 }
 
+void Controller::moveSnake(Segment newHead)
+{
+    m_segments.push_front(newHead);
+    DisplayInd placeNewHead;
+    placeNewHead.x = newHead.x;
+    placeNewHead.y = newHead.y;
+    placeNewHead.value = Cell_SNAKE;
+
+    m_displayPort.send(std::make_unique<EventT<DisplayInd>>(placeNewHead));
+
+    m_segments.erase(
+        std::remove_if(
+            m_segments.begin(),
+            m_segments.end(),
+            [](auto const& segment){ return not (segment.ttl > 0); }),
+        m_segments.end());
+}
+
 void Controller::receive(std::unique_ptr<Event> e)
 {
     try {
@@ -109,20 +127,7 @@ void Controller::receive(std::unique_ptr<Event> e)
         }
 
         if (not lost) {
-            m_segments.push_front(newHead);
-            DisplayInd placeNewHead;
-            placeNewHead.x = newHead.x;
-            placeNewHead.y = newHead.y;
-            placeNewHead.value = Cell_SNAKE;
-
-            m_displayPort.send(std::make_unique<EventT<DisplayInd>>(placeNewHead));
-
-            m_segments.erase(
-                std::remove_if(
-                    m_segments.begin(),
-                    m_segments.end(),
-                    [](auto const& segment){ return not (segment.ttl > 0); }),
-                m_segments.end());
+            moveSnake(newHead);
         }
     } catch (std::bad_cast&) {
         try {
