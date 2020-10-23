@@ -21,6 +21,26 @@ bool MapController::isPositionOutsideMap(int x, int y) const
     return x < 0 or y < 0 or x >= m_mapDimension.first or y >= m_mapDimension.second;
 }
 
+std::pair<int, int> MapController::getMapDimension()
+{
+    return m_mapDimension;
+}
+
+std::pair<int, int> MapController::getFoodPosition()
+{
+    return m_foodPosition;
+}
+
+void MapController::setMapDimension(std::pair<int, int> _m_mapDimension)
+{
+    m_mapDimension = _m_mapDimension;
+}
+
+void MapController::setFoodPosition(std::pair<int, int> _m_foodPosition)
+{
+    m_foodPosition = _m_foodPosition;
+}
+
 Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePort, std::string const& p_config)
     : m_displayPort(p_displayPort),
       m_foodPort(p_foodPort),
@@ -35,8 +55,8 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
     istr >> w >> width >> height >> f >> foodX >> foodY >> s;
 
     if (w == 'W' and f == 'F' and s == 'S') {
-        mapController.m_mapDimension = std::make_pair(width, height);
-        mapController.m_foodPosition = std::make_pair(foodX, foodY);
+        mapController.setMapDimension(std::make_pair(width, height));
+        mapController.setFoodPosition(std::make_pair(foodX, foodY));
 
         istr >> d;
         switch (d) {
@@ -75,7 +95,7 @@ bool Controller::isSegmentAtPosition(int x, int y) const
 
 void Controller::sendPlaceNewFood(int x, int y)
 {
-    mapController.m_foodPosition = std::make_pair(x, y);
+    mapController.setFoodPosition(std::make_pair(x, y));
 
     DisplayInd placeNewFood;
     placeNewFood.x = x;
@@ -88,8 +108,8 @@ void Controller::sendPlaceNewFood(int x, int y)
 void Controller::sendClearOldFood()
 {
     DisplayInd clearOldFood;
-    clearOldFood.x = mapController.m_foodPosition.first;
-    clearOldFood.y = mapController.m_foodPosition.second;
+    clearOldFood.x = mapController.getFoodPosition().first;
+    clearOldFood.y = mapController.getFoodPosition().second;
     clearOldFood.value = Cell_FREE;
 
     m_displayPort.send(std::make_unique<EventT<DisplayInd>>(clearOldFood));
@@ -157,7 +177,7 @@ void Controller::addHeadSegment(Segment const& newHead)
 
 void Controller::removeTailSegmentIfNotScored(Segment const& newHead)
 {
-    if (std::make_pair(newHead.x, newHead.y) == mapController.m_foodPosition) {
+    if (std::make_pair(newHead.x, newHead.y) == mapController.getFoodPosition()) {
         m_scorePort.send(std::make_unique<EventT<ScoreInd>>());
         m_foodPort.send(std::make_unique<EventT<FoodReq>>());
     } else {

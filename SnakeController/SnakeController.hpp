@@ -24,11 +24,17 @@ struct UnexpectedEventException : std::runtime_error
 
 class MapController
 {
-public:
+private:
     std::pair<int, int> m_mapDimension;
     std::pair<int, int> m_foodPosition;
 
+public:
     bool isPositionOutsideMap(int x, int y) const;
+
+    std::pair<int, int> getMapDimension();
+    std::pair<int, int> getFoodPosition();
+    void setMapDimension(std::pair<int, int> _m_mapDimension);
+    void setFoodPosition(std::pair<int, int> _m_foodPosition);
 };
 
 class Controller : public IEventHandler
