@@ -22,10 +22,13 @@ struct UnexpectedEventException : std::runtime_error
     UnexpectedEventException();
 };
 
-struct MapObjects
+class MapController
 {
+public:
     std::pair<int, int> m_mapDimension;
     std::pair<int, int> m_foodPosition;
+
+    bool isPositionOutsideMap(int x, int y) const;
 };
 
 class Controller : public IEventHandler
@@ -36,7 +39,7 @@ public:
     Controller(Controller const& p_rhs) = delete;
     Controller& operator=(Controller const& p_rhs) = delete;
 
-    MapObjects mapObjects;
+    MapController mapController;
 
     void receive(std::unique_ptr<Event> e) override;
 
