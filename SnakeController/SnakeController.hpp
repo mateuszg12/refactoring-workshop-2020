@@ -22,6 +22,12 @@ struct UnexpectedEventException : std::runtime_error
     UnexpectedEventException();
 };
 
+struct MapObjects
+{
+    std::pair<int, int> m_mapDimension;
+    std::pair<int, int> m_foodPosition;
+};
+
 class Controller : public IEventHandler
 {
 public:
@@ -30,15 +36,14 @@ public:
     Controller(Controller const& p_rhs) = delete;
     Controller& operator=(Controller const& p_rhs) = delete;
 
+    MapObjects mapObjects;
+
     void receive(std::unique_ptr<Event> e) override;
 
 private:
     IPort& m_displayPort;
     IPort& m_foodPort;
     IPort& m_scorePort;
-
-    std::pair<int, int> m_mapDimension;
-    std::pair<int, int> m_foodPosition;
 
     struct Segment
     {
